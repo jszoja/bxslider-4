@@ -98,13 +98,25 @@
       return this;
     }
 
-    // support multiple elements
-    if (this.length > 1) {
-      this.each(function() {
-        $(this).bxSlider(options);
-      });
-      return this;
-    }
+    // support mutltiple elements
+    // return the object rather than jQuery selector
+    // this object gives access to each slider instance
+    // and allows you to call slider public methods on the entire collection
+    // eg sliders = $('.my-slider').bxSlider();
+    //    sliders.do('redrawSlider');
+    if(this.length > 1){
+        var collection = [];
+        this.each(function(){collection.push($(this).bxSlider(options))});
+        var SliderCollecton = {
+            collection: collection,
+            do: function(methodName) {
+                for( index in this.collection ) {
+                    this.collection[index][methodName].call();
+                }
+            }
+        };
+        return SliderCollecton;
+    } 
 
     // create a namespace to be used throughout the plugin
     var slider = {},
